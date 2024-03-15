@@ -1,17 +1,12 @@
-using Duende.IdentityServer.EntityFramework.Options;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using PizzaStore.Domain;
 
 namespace PizzaStore;
 
-public class PizzaStoreContext : ApiAuthorizationDbContext<PizzaStoreUser>
+public class PizzaStoreDbContext : IdentityDbContext<PizzaStoreUser>
 {
-    public PizzaStoreContext(
-        DbContextOptions options,
-        IOptions<OperationalStoreOptions> operationalStoreOptions)
-    : base(options, operationalStoreOptions)
+    public PizzaStoreDbContext(DbContextOptions options) : base(options)
     {
     }
 

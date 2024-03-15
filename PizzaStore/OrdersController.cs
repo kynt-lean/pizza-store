@@ -8,9 +8,9 @@ namespace PizzaStore;
 [ApiController]
 public class OrdersController : Controller
 {
-    private readonly PizzaStoreContext _db;
+    private readonly PizzaStoreDbContext _db;
 
-    public OrdersController(PizzaStoreContext db)
+    public OrdersController(PizzaStoreDbContext db)
     {
         _db = db;
     }

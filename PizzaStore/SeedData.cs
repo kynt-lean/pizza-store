@@ -4,7 +4,7 @@ namespace PizzaStore;
 
 public static class SeedData
 {
-    public static void Initialize(PizzaStoreContext db)
+    public static void Initialize(PizzaStoreDbContext db)
     {
         var toppings = new Topping[]
         {

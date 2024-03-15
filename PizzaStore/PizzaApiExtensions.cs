@@ -12,10 +12,9 @@ public static class PizzaApiExtensions
         // Subscribe to notifications
         app.MapPut("/notifications/subscribe", [Authorize] async (
             HttpContext context,
-            PizzaStoreContext db,
+            PizzaStoreDbContext db,
             NotificationSubscription subscription) =>
         {
-
             // We're storing at most one subscription per user, so delete old ones.
             // Alternatively, you could let the user register multiple subscriptions from different browsers/devices.
             var userId = GetUserId(context);
@@ -32,11 +31,10 @@ public static class PizzaApiExtensions
 
             await db.SaveChangesAsync();
             return Results.Ok(subscription);
-
         });
 
         // Specials
-        app.MapGet("/specials", async (PizzaStoreContext db) =>
+        app.MapGet("/specials", async (PizzaStoreDbContext db) =>
         {
 
             var specials = await db.Specials.ToListAsync();
@@ -45,14 +43,13 @@ public static class PizzaApiExtensions
         });
 
         // Toppings
-        app.MapGet("/toppings", async (PizzaStoreContext db) =>
+        app.MapGet("/toppings", async (PizzaStoreDbContext db) =>
         {
             var toppings = await db.Toppings.OrderBy(t => t.Name).ToListAsync();
             return Results.Ok(toppings);
         });
 
         return app;
-
     }
 
     public static string? GetUserId(HttpContext context) => context.User.FindFirstValue(ClaimTypes.NameIdentifier);
