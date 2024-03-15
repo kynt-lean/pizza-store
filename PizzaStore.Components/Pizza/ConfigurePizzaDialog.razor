@@ -1,4 +1,4 @@
-@using PizzaStore.Domain
+@using PizzaStore.Contracts
 
 <div class="dialog-container">
     <div class="dialog">
@@ -18,5 +18,5 @@
 </div>
 
 @code {
-    [Parameter, EditorRequired] public Pizza Pizza { get; set; } = new();
+    [Parameter, EditorRequired] public PizzaDto Pizza { get; set; } = new();
 }

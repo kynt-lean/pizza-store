@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PizzaStore.Domain;
 
-namespace PizzaStore;
+namespace PizzaStore.Data;
 
 public class PizzaStoreDbContext : IdentityDbContext<PizzaStoreUser>
 {
@@ -25,7 +25,7 @@ public class PizzaStoreDbContext : IdentityDbContext<PizzaStoreUser>
         base.OnModelCreating(modelBuilder);
 
         // Configuring a many-to-many special -> topping relationship that is friendly for serialization
-        modelBuilder.Entity<PizzaTopping>().HasKey(pst => new { pst.PizzaStoreId, pst.ToppingId });
+        modelBuilder.Entity<PizzaTopping>().HasKey(pst => new { pst.PizzaId, pst.ToppingId });
         modelBuilder.Entity<PizzaTopping>().HasOne<Pizza>().WithMany(ps => ps.Toppings);
         modelBuilder.Entity<PizzaTopping>().HasOne(pst => pst.Topping).WithMany();
 

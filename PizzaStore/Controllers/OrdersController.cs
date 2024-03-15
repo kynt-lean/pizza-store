@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PizzaStore.Data;
 using PizzaStore.Domain;
 
-namespace PizzaStore;
+namespace PizzaStore.Controllers;
 
 [Route("orders")]
 [ApiController]

@@ -8,9 +8,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PizzaStore.Client", "PizzaS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaStore.Components", "PizzaStore.Components\PizzaStore.Components.csproj", "{10DAF35E-2B71-4E02-B260-5FFA66335AC6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaStore.Contracts", "PizzaStore.Contracts\PizzaStore.Contracts.csproj", "{10CA5415-F124-4FE6-B706-258AB1FB0D77}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaStore.Domain", "PizzaStore.Domain\PizzaStore.Domain.csproj", "{6A9B1627-B25D-4963-9433-A2107D8BDFAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaStore.Domain.Shared", "PizzaStore.Domain.Shared\PizzaStore.Domain.Shared.csproj", "{94416BAB-4EAE-473F-A861-E7DBDE3D1E40}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaStore.Shared", "PizzaStore.Shared\PizzaStore.Shared.csproj", "{94416BAB-4EAE-473F-A861-E7DBDE3D1E40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -82,6 +84,18 @@ Global
 		{94416BAB-4EAE-473F-A861-E7DBDE3D1E40}.Release|x64.Build.0 = Release|Any CPU
 		{94416BAB-4EAE-473F-A861-E7DBDE3D1E40}.Release|x86.ActiveCfg = Release|Any CPU
 		{94416BAB-4EAE-473F-A861-E7DBDE3D1E40}.Release|x86.Build.0 = Release|Any CPU
+		{10CA5415-F124-4FE6-B706-258AB1FB0D77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10CA5415-F124-4FE6-B706-258AB1FB0D77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10CA5415-F124-4FE6-B706-258AB1FB0D77}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{10CA5415-F124-4FE6-B706-258AB1FB0D77}.Debug|x64.Build.0 = Debug|Any CPU
+		{10CA5415-F124-4FE6-B706-258AB1FB0D77}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{10CA5415-F124-4FE6-B706-258AB1FB0D77}.Debug|x86.Build.0 = Debug|Any CPU
+		{10CA5415-F124-4FE6-B706-258AB1FB0D77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10CA5415-F124-4FE6-B706-258AB1FB0D77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10CA5415-F124-4FE6-B706-258AB1FB0D77}.Release|x64.ActiveCfg = Release|Any CPU
+		{10CA5415-F124-4FE6-B706-258AB1FB0D77}.Release|x64.Build.0 = Release|Any CPU
+		{10CA5415-F124-4FE6-B706-258AB1FB0D77}.Release|x86.ActiveCfg = Release|Any CPU
+		{10CA5415-F124-4FE6-B706-258AB1FB0D77}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

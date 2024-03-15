@@ -1,9 +1,13 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PizzaStore;
 using PizzaStore.Components;
 using PizzaStore.Components.Account;
+using PizzaStore.Contracts;
+using PizzaStore.Data;
+using PizzaStore.Domain;
+using PizzaStore.Mapper;
+using PizzaStore.Services;
 
 var dotenv = Path.Combine(Directory.GetCurrentDirectory(), ".env");
 if (File.Exists(dotenv))
@@ -24,6 +28,10 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
+builder.Services.AddAutoMapper(typeof(PizzaStoreMapperProfile).Assembly);
+
+builder.Services.AddScoped<IPizzaService, PizzaService>();
+
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -37,6 +45,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddCascadingAuthenticationState();
+
 
 var app = builder.Build();
 

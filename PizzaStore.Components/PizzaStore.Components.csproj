@@ -13,11 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PizzaStore.Domain.Shared\PizzaStore.Domain.Shared.csproj" />
+    <ProjectReference Include="..\PizzaStore.Contracts\PizzaStore.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

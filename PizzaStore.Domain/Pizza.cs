@@ -34,9 +34,4 @@ public class Pizza
             ? throw new NullReferenceException($"{nameof(Toppings)} contained null when calculating the Total Price.")
             : GetBasePrice() + Toppings.Sum(t => t.Topping!.Price);
     }
-
-    public string GetFormattedTotalPrice()
-    {
-        return GetTotalPrice().ToString("0.00");
-    }
 }

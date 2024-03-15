@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using PizzaStore.Domain;
 
 namespace PizzaStore.Components.Account;
 

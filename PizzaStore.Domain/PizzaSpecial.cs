@@ -14,6 +14,4 @@ public class PizzaSpecial
     public string Description { get; set; } = string.Empty;
 
     public string ImageUrl { get; set; } = "img/pizzas/cheese.jpg";
-
-    public string GetFormattedBasePrice() => BasePrice.ToString("0.00");
 }

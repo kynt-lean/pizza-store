@@ -1,6 +1,6 @@
 using PizzaStore.Domain;
 
-namespace PizzaStore;
+namespace PizzaStore.Data;
 
 public static class SeedData
 {
@@ -177,7 +177,7 @@ public static class SeedData
                     BasePrice = 11.50m,
                     ImageUrl = "img/pizzas/salad.jpg",
             },
-            new PizzaSpecial()
+            new()
             {
                     Id = 8,
                     Name = "Margherita",

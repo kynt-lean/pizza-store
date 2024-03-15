@@ -1,4 +1,4 @@
-namespace PizzaStore.Domain.Map;
+namespace PizzaStore.Shared.Map;
 
 public class Marker
 {

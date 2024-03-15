@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace PizzaStore;
+namespace PizzaStore.Domain;
 
 public class PizzaStoreUser : IdentityUser
 {

@@ -1,4 +1,4 @@
-using PizzaStore.Domain.Map;
+using PizzaStore.Shared.Map;
 
 namespace PizzaStore.Domain;
 

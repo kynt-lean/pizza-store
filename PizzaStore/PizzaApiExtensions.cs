@@ -1,9 +1,10 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
+using PizzaStore.Contracts;
+using PizzaStore.Data;
 using PizzaStore.Domain;
 
-namespace PizzaStore;
+namespace Microsoft.AspNetCore.Builder;
 
 public static class PizzaApiExtensions
 {
@@ -34,18 +35,18 @@ public static class PizzaApiExtensions
         });
 
         // Specials
-        app.MapGet("/specials", async (PizzaStoreDbContext db) =>
+        app.MapGet("/specials", async (IPizzaService service) =>
         {
 
-            var specials = await db.Specials.ToListAsync();
+            var specials = await service.GetListSpecialAsync();
             return Results.Ok(specials);
 
         });
 
         // Toppings
-        app.MapGet("/toppings", async (PizzaStoreDbContext db) =>
+        app.MapGet("/toppings", async (IPizzaService service) =>
         {
-            var toppings = await db.Toppings.OrderBy(t => t.Name).ToListAsync();
+            var toppings = await service.GetListToppingAsync();
             return Results.Ok(toppings);
         });
 
