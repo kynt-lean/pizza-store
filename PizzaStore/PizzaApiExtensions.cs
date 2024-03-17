@@ -4,11 +4,11 @@ using PizzaStore.Contracts;
 using PizzaStore.Data;
 using PizzaStore.Domain;
 
-namespace Microsoft.AspNetCore.Builder;
+namespace Microsoft.AspNetCore.Routing;
 
 public static class PizzaApiExtensions
 {
-    public static WebApplication MapPizzaApi(this WebApplication app)
+    public static WebApplication MapPizzaApiEndpoints(this WebApplication app)
     {
         // Subscribe to notifications
         app.MapPut("/notifications/subscribe", [Authorize] async (

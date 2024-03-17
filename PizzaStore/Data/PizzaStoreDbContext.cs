@@ -4,12 +4,8 @@ using PizzaStore.Domain;
 
 namespace PizzaStore.Data;
 
-public class PizzaStoreDbContext : IdentityDbContext<PizzaStoreUser>
+public class PizzaStoreDbContext(DbContextOptions<PizzaStoreDbContext> options) : IdentityDbContext<PizzaStoreUser>(options)
 {
-    public PizzaStoreDbContext(DbContextOptions options) : base(options)
-    {
-    }
-
     public DbSet<Order> Orders => Set<Order>();
 
     public DbSet<Pizza> Pizzas => Set<Pizza>();

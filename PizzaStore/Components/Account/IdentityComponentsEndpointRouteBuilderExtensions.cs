@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using PizzaStore.Components.Account.Pages;
 using PizzaStore.Components.Account.Pages.Manage;
-using PizzaStore.Domain;
+using PizzaStore.Data;
 
 namespace Microsoft.AspNetCore.Routing;
 
