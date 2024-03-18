@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PizzaStore.Contracts;
 using PizzaStore.Data;
 using PizzaStore.Domain;
@@ -48,6 +49,20 @@ public static class PizzaApiExtensions
         {
             var toppings = await service.GetListToppingAsync();
             return Results.Ok(toppings);
+        });
+
+        // Pizza base price
+        app.MapPost("pizza/base-price", async ([FromBody] OrderPizzaDto orderPizza, IPizzaService service) =>
+        {
+            var basePrice = await service.GetPizzaBasePriceAsync(orderPizza);
+            return Results.Ok(basePrice);
+        });
+
+        // Pizza total price
+        app.MapPost("pizza/total-price", async ([FromBody] OrderPizzaDto orderPizza, IPizzaService service) =>
+        {
+            var totalPrice = await service.GetPizzaTotalPriceAsync(orderPizza);
+            return Results.Ok(totalPrice);
         });
 
         return app;

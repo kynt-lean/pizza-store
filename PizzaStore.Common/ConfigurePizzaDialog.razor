@@ -1,4 +1,5 @@
-@using PizzaStore.Contracts
+@implements IDisposable
+@inject IPizzaService PizzaService
 
 <div class="dialog-container">
     <div class="dialog">
@@ -6,11 +7,20 @@
             <h2>@Pizza.Special?.Name</h2>
             @Pizza.Special?.Description
         </div>
-        <form class="dialog-body"></form>
+        <form class="dialog-body">
+            <div>
+                <label>Size:</label>
+                <input type="range" min="OrderPizzaDto.MinimumSize" max="OrderPizzaDto.MaximumSize" step="1" @bind="Pizza.Size" @bind:event="oninput" 
+                    @onchange="@(() => totalPriceSub.OnNext(true))" />
+                <span class="size-label">
+                    @(Pizza.Size)" (£@(totalPrice.GetFormattedPrice()))
+                </span>
+            </div>
+        </form>
         <div class="dialog-buttons">
             <button class="btn btn-secondary mr-auto">Cancel</button>
             <span class="mr-center">
-                Price: <span class="price">@(Pizza.GetFormattedTotalPrice())</span>
+                Price: <span class="price">@(totalPrice.GetFormattedPrice())</span>
             </span>
             <button class="btn btn-success ml-auto">Order</button>
         </div>
@@ -18,5 +28,29 @@
 </div>
 
 @code {
-    [Parameter, EditorRequired] public PizzaDto Pizza { get; set; } = new();
+    [Parameter, EditorRequired] public OrderPizzaDto Pizza { get; set; } = new();
+
+    decimal totalPrice;
+    Subject<bool> totalPriceSub = new();
+
+    protected override void OnInitialized()
+    {
+        HookToTotalPrice().Subscribe(res =>
+        {
+            totalPrice = res;
+            InvokeAsync(StateHasChanged);
+        });
+        totalPriceSub.OnNext(true);
+    }
+
+    protected IObservable<decimal> HookToTotalPrice()
+    {
+        return totalPriceSub
+            .SelectMany(_ => Observable.FromAsync(async () => await PizzaService.GetPizzaTotalPriceAsync(Pizza)));
+    }
+
+    public void Dispose()
+    {
+        totalPriceSub.Dispose();
+    }
 }

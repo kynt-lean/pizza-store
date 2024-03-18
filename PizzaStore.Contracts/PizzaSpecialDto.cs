@@ -11,6 +11,4 @@ public class PizzaSpecialDto
     public string Description { get; set; } = string.Empty;
 
     public string? ImageUrl { get; set; }
-
-    public string GetFormattedBasePrice() => BasePrice.ToString("0.00");
 }

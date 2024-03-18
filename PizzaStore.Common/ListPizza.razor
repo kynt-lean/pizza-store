@@ -1,5 +1,3 @@
-@using System.Reactive.Linq
-@using PizzaStore.Contracts
 @implements IDisposable
 @inject IPizzaService PizzaService
 
@@ -8,25 +6,32 @@
 <ul class="pizza-cards">
 @foreach (var special in specials)
 {
-    <li style="background-image: url('@special.ImageUrl')">
+    <li @onclick="@(() => ShowConfigurePizzaDialog(special))" style="background-image: url('@special.ImageUrl')">
         <div class="pizza-info">
             <span class="title">@special.Name</span>
             @special.Description
-            <span class="price">@special.GetFormattedBasePrice()</span>
+            <span class="price">@special.BasePrice.GetFormattedPrice()</span>
         </div>
     </li>
 }
 </ul>
 
+@if (showingConfigureDialog)
+{
+    <ConfigurePizzaDialog Pizza="configuringPizza" />
+}
+
 @code {
     bool loading = true;
     List<PizzaSpecialDto> specials = [];
-
     IDisposable? subscription;
+    OrderPizzaDto? configuringPizza;
+    bool showingConfigureDialog = false;
 
     protected override void OnInitialized()
     {
-        subscription = HookToQuery().Subscribe(res =>{
+        subscription = HookToQuery().Subscribe(res =>
+        {
             specials = res;
             loading = false;
             InvokeAsync(StateHasChanged);
@@ -40,6 +45,18 @@
             await Task.Delay(2000);
             return await PizzaService.GetListSpecialAsync();
         });
+    }
+
+    void ShowConfigurePizzaDialog(PizzaSpecialDto special)
+    {
+        configuringPizza = new OrderPizzaDto()
+        {
+            Special = special,
+            SpecialId = special.Id,
+            Size = OrderPizzaDto.DefaultSize,
+            Toppings = new List<PizzaToppingDto>(),
+        };
+        showingConfigureDialog = true;
     }
 
     public void Dispose()

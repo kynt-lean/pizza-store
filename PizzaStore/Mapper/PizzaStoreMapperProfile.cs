@@ -9,10 +9,8 @@ public class PizzaStoreMapperProfile : Profile
     public PizzaStoreMapperProfile()
     {
         CreateMap<Topping, ToppingDto>();
-        CreateMap<PizzaSpecial, PizzaSpecialDto>();
-        CreateMap<PizzaTopping, PizzaToppingDto>();
-        CreateMap<Pizza, PizzaDto>()
-            .ForMember(dest => dest.BasePrice, opts => opts.MapFrom(src => src.GetBasePrice()))
-            .ForMember(dest => dest.TotalPrice, opts => opts.MapFrom(src => src.GetTotalPrice()));
+        CreateMap<PizzaSpecial, PizzaSpecialDto>().ReverseMap();
+        CreateMap<PizzaTopping, PizzaToppingDto>().ReverseMap();
+        CreateMap<OrderPizzaDto, Pizza>();
     }
 }

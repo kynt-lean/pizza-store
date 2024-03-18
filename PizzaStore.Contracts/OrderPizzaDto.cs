@@ -1,6 +1,6 @@
 namespace PizzaStore.Contracts;
 
-public class PizzaDto
+public class OrderPizzaDto
 {
     public const int DefaultSize = 12;
     public const int MinimumSize = 9;
@@ -17,13 +17,4 @@ public class PizzaDto
     public int Size { get; set; }
 
     public List<PizzaToppingDto> Toppings { get; set; } = [];
-
-    public decimal BasePrice { get; set; }
-
-    public decimal TotalPrice { get; set; }
-
-    public string GetFormattedTotalPrice()
-    {
-        return TotalPrice.ToString("0.00");
-    }
 }

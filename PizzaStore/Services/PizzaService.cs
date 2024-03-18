@@ -2,27 +2,40 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using PizzaStore.Contracts;
 using PizzaStore.Data;
+using PizzaStore.Domain;
 
 namespace PizzaStore.Services;
 
 public class PizzaService : IPizzaService
 {
-    private readonly PizzaStoreDbContext Db;
-    private readonly IMapper Mapper;
+    private readonly PizzaStoreDbContext _db;
+    private readonly IMapper _mapper;
 
     public PizzaService(PizzaStoreDbContext db, IMapper mapper)
     {
-        Db = db;
-        Mapper = mapper;
+        _db = db;
+        _mapper = mapper;
     }
 
     public async Task<List<PizzaSpecialDto>> GetListSpecialAsync()
     {
-        return Mapper.Map<List<PizzaSpecialDto>>(await Db.Specials.ToListAsync());
+        return _mapper.Map<List<PizzaSpecialDto>>(await _db.Specials.ToListAsync());
     }
 
     public async Task<List<ToppingDto>> GetListToppingAsync()
     {
-        return Mapper.Map<List<ToppingDto>>(await Db.Toppings.OrderBy(t => t.Name).ToListAsync());
+        return _mapper.Map<List<ToppingDto>>(await _db.Toppings.OrderBy(t => t.Name).ToListAsync());
+    }
+
+    public Task<decimal> GetPizzaBasePriceAsync(OrderPizzaDto orderPizza)
+    {
+        var pizza = _mapper.Map<Pizza>(orderPizza);
+        return Task.FromResult(pizza.GetBasePrice());
+    }
+
+    public Task<decimal> GetPizzaTotalPriceAsync(OrderPizzaDto orderPizza)
+    {
+        var pizza = _mapper.Map<Pizza>(orderPizza);
+        return Task.FromResult(pizza.GetTotalPrice());
     }
 }
