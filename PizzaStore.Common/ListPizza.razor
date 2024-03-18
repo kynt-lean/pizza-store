@@ -1,35 +1,49 @@
+@using System.Reactive.Linq
 @using PizzaStore.Contracts
+@implements IDisposable
 @inject IPizzaService PizzaService
-@* @attribute [StreamRendering] *@
 
-<div class="main">
-    <ul class="pizza-cards">
-        @if(specials == null)
-        {
-            <p><em>Loading...</em></p>
-        }
-        else
-        {
-            @foreach (var special in specials)
-            {
-                <li style="background-image: url('@special.ImageUrl')">
-                    <div class="pizza-info">
-                        <span class="title">@special.Name</span>
-                        @special.Description
-                        <span class="price">@special.GetFormattedBasePrice()</span>
-                    </div>
-                </li>
-            }
-        }
-    </ul>
-</div>
+@if (loading) { <LoadingIndicator /> }
+
+<ul class="pizza-cards">
+@foreach (var special in specials)
+{
+    <li style="background-image: url('@special.ImageUrl')">
+        <div class="pizza-info">
+            <span class="title">@special.Name</span>
+            @special.Description
+            <span class="price">@special.GetFormattedBasePrice()</span>
+        </div>
+    </li>
+}
+</ul>
 
 @code {
-    List<PizzaSpecialDto>? specials;
+    bool loading = true;
+    List<PizzaSpecialDto> specials = [];
 
-    protected override async Task OnInitializedAsync()
+    IDisposable? subscription;
+
+    protected override void OnInitialized()
     {
-        await Task.Delay(2000);
-        specials = await PizzaService.GetListSpecialAsync();
+        subscription = HookToQuery().Subscribe(res =>{
+            specials = res;
+            loading = false;
+            InvokeAsync(StateHasChanged);
+        });
+    }
+
+    protected IObservable<List<PizzaSpecialDto>> HookToQuery()
+    {
+        return Observable.FromAsync(async () =>
+        {
+            await Task.Delay(2000);
+            return await PizzaService.GetListSpecialAsync();
+        });
+    }
+
+    public void Dispose()
+    {
+        subscription?.Dispose();
     }
 }

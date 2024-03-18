@@ -15,15 +15,16 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
-    <ProjectReference Include="..\PizzaStore.Client\PizzaStore.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PizzaStore.Client\PizzaStore.Client.csproj" />
     <ProjectReference Include="..\PizzaStore.Common\PizzaStore.Common.csproj" />
     <ProjectReference Include="..\PizzaStore.Contracts\PizzaStore.Contracts.csproj" />
     <ProjectReference Include="..\PizzaStore.Domain\PizzaStore.Domain.csproj" />

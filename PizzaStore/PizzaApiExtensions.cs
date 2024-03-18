@@ -35,7 +35,7 @@ public static class PizzaApiExtensions
         });
 
         // Specials
-        app.MapGet("/specials", async (IPizzaService service) =>
+        app.MapGet("pizza/specials", async (IPizzaService service) =>
         {
 
             var specials = await service.GetListSpecialAsync();
@@ -44,7 +44,7 @@ public static class PizzaApiExtensions
         });
 
         // Toppings
-        app.MapGet("/toppings", async (IPizzaService service) =>
+        app.MapGet("pizza/toppings", async (IPizzaService service) =>
         {
             var toppings = await service.GetListToppingAsync();
             return Results.Ok(toppings);

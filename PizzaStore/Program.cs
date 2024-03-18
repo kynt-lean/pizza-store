@@ -27,9 +27,6 @@ builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();
 
-builder.Services.AddAutoMapper(typeof(PizzaStoreMapperProfile).Assembly);
-builder.Services.AddScoped<IPizzaService, PizzaService>();
-
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
@@ -46,8 +43,24 @@ builder.Services.AddIdentityCore<PizzaStoreUser>(options => options.SignIn.Requi
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<PizzaStoreUser>, IdentityNoOpEmailSender>();
+builder.Services.AddAutoMapper(typeof(PizzaStoreMapperProfile).Assembly);
+builder.Services.AddScoped<IPizzaService, PizzaService>();
 
 var app = builder.Build();
+
+var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+using (var scope = scopeFactory.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<PizzaStoreDbContext>();
+    if ((await dbContext.Database.GetPendingMigrationsAsync()).Any())
+    {
+        await dbContext.Database.MigrateAsync();
+    }
+    if (app.Environment.IsDevelopment())
+    {
+        await SeedData.InitializeAsync(dbContext);
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
