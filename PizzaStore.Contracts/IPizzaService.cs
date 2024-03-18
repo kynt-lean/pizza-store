@@ -6,7 +6,7 @@ public interface IPizzaService
 
     Task<List<ToppingDto>> GetListToppingAsync();
 
-    Task<decimal> GetPizzaBasePriceAsync(OrderPizzaDto orderPizza);
+    Task<decimal> GetPizzaBasePriceAsync(PizzaDto pizza);
 
-    Task<decimal> GetPizzaTotalPriceAsync(OrderPizzaDto orderPizza);
+    Task<decimal> GetPizzaTotalPriceAsync(PizzaDto pizza);
 }

@@ -1,5 +1,4 @@
 @using Microsoft.JSInterop
-@using PizzaStore.Contracts.Map
 @inject IJSRuntime JSRuntime
 
 <div id="@elementId" style="height: 100%; width: 100%;"></div>
@@ -8,7 +7,7 @@
     string elementId = $"map-{Guid.NewGuid().ToString("D")}";
 
     [Parameter] public double Zoom { get; set; }
-    [Parameter, EditorRequired] public List<MarkerDto> Markers { get; set; } = new();
+    [Parameter, EditorRequired] public List<Marker> Markers { get; set; } = new();
 
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {

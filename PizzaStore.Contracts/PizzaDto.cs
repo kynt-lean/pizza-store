@@ -1,6 +1,6 @@
 namespace PizzaStore.Contracts;
 
-public class OrderPizzaDto
+public class PizzaDto
 {
     public const int DefaultSize = 12;
     public const int MinimumSize = 9;

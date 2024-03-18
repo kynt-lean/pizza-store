@@ -1,104 +1,42 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PizzaStore.Data;
-using PizzaStore.Domain;
+using PizzaStore.Contracts;
 
 namespace PizzaStore.Controllers;
 
 [Route("orders")]
 [ApiController]
-public class OrdersController : Controller
+public class OrdersController(IOrdersService service) : Controller
 {
-    private readonly PizzaStoreDbContext _db;
-
-    public OrdersController(PizzaStoreDbContext db)
-    {
-        _db = db;
-    }
+    private readonly IOrdersService _service = service;
 
     [HttpGet]
-    public async Task<ActionResult<List<OrderWithStatus>>> GetOrders()
+    public async Task<ActionResult<List<OrderWithStatusDto>>> GetListOrderWithStatusAsync()
     {
-        var orders = await _db.Orders
-                // .Where(o => o.UserId == PizzaStoreApiExtensions.GetUserId(HttpContext))
-                .Include(o => o.DeliveryLocation)
-                .Include(o => o.Pizzas).ThenInclude(p => p.Special)
-                .Include(o => o.Pizzas).ThenInclude(p => p.Toppings).ThenInclude(t => t.Topping)
-                .OrderByDescending(o => o.CreatedTime)
-                .ToListAsync();
-
-        return orders.Select(o => OrderWithStatus.FromOrder(o)).ToList();
+        return await _service.GetListOrderWithStatusAsync();
     }
 
     [HttpGet("{orderId}")]
-    public async Task<ActionResult<OrderWithStatus>> GetOrderWithStatus(int orderId)
+    public async Task<ActionResult<OrderWithStatusDto>> GetOrderWithStatusAsync(int orderId)
     {
-        var order = await _db.Orders
-                .Where(o => o.OrderId == orderId)
-                // .Where(o => o.UserId == PizzaStoreApiExtensions.GetUserId(HttpContext))
-                .Include(o => o.DeliveryLocation)
-                .Include(o => o.Pizzas).ThenInclude(p => p.Special)
-                .Include(o => o.Pizzas).ThenInclude(p => p.Toppings).ThenInclude(t => t.Topping)
-                .SingleOrDefaultAsync();
-
-        if (order == null)
+        try
+        {
+            return await _service.GetOrderWithStatusAsync(orderId);
+        }
+        catch (Exception)
         {
             return NotFound();
         }
+    }
 
-        return OrderWithStatus.FromOrder(order);
+    [HttpPost("total-price")]
+    public async Task<ActionResult<decimal>> GetOrderTotalPriceAsync(OrderDto order)
+    {
+        return await _service.GetOrderTotalPriceAsync(order);
     }
 
     [HttpPost]
-    public async Task<ActionResult<int>> PlaceOrder(Order order)
+    public async Task<ActionResult<int>> PlaceOrderAsync(OrderDto order)
     {
-        order.CreatedTime = DateTime.Now;
-        order.DeliveryLocation = new LatLong(51.5001, -0.1239);
-        // order.UserId = PizzaStoreApiExtensions.GetUserId(HttpContext);
-
-        // Enforce existence of PizzaStore.SpecialId and Topping.ToppingId
-        // in the database - prevent the submitter from making up
-        // new specials and toppings
-        foreach (var pizza in order.Pizzas)
-        {
-            pizza.SpecialId = pizza.Special?.Id ?? 0;
-            pizza.Special = null;
-
-            foreach (var topping in pizza.Toppings)
-            {
-                topping.ToppingId = topping.Topping?.Id ?? 0;
-                topping.Topping = null;
-            }
-        }
-
-        _db.Orders.Attach(order);
-        await _db.SaveChangesAsync();
-
-        // In the background, send push notifications if possible
-        var subscription = await _db.NotificationSubscriptions.Where(e => e.UserId == PizzaApiExtensions.GetUserId(HttpContext)).SingleOrDefaultAsync();
-        if (subscription != null)
-        {
-            _ = TrackAndSendNotificationsAsync(order, subscription);
-        }
-
-        return order.OrderId;
-    }
-
-    private static async Task TrackAndSendNotificationsAsync(Order order, NotificationSubscription subscription)
-    {
-        // In a realistic case, some other backend process would track
-        // order delivery progress and send us notifications when it
-        // changes. Since we don't have any such process here, fake it.
-        await Task.Delay(OrderWithStatus.PreparationDuration);
-        await SendNotificationAsync(order, subscription, "Your order has been dispatched!");
-
-        await Task.Delay(OrderWithStatus.DeliveryDuration);
-        await SendNotificationAsync(order, subscription, "Your order is now delivered. Enjoy!");
-    }
-
-    private static Task SendNotificationAsync(Order order, NotificationSubscription subscription, string message)
-    {
-        // This will be implemented later
-        return Task.CompletedTask;
+        return await _service.PlaceOrderAsync(order);
     }
 }

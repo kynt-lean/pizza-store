@@ -8,9 +8,11 @@ public class PizzaStoreMapperProfile : Profile
 {
     public PizzaStoreMapperProfile()
     {
-        CreateMap<Topping, ToppingDto>();
+        CreateMap<Topping, ToppingDto>().ReverseMap();
         CreateMap<PizzaSpecial, PizzaSpecialDto>().ReverseMap();
         CreateMap<PizzaTopping, PizzaToppingDto>().ReverseMap();
-        CreateMap<OrderPizzaDto, Pizza>();
+        CreateMap<PizzaDto, Pizza>();
+
+        CreateMap<Order, OrderDto>();
     }
 }

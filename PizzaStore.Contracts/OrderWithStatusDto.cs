@@ -1,30 +1,25 @@
-using PizzaStore.Domain.Map;
+namespace PizzaStore.Contracts;
 
-namespace PizzaStore.Domain;
-
-public class OrderWithStatus
+public class OrderWithStatusDto
 {
     public readonly static TimeSpan PreparationDuration = TimeSpan.FromSeconds(10);
     public readonly static TimeSpan DeliveryDuration = TimeSpan.FromMinutes(1); // Unrealistic, but more interesting to watch
 
-    // Set from DB
-    public Order Order { get; set; } = null!;
+    public OrderDto Order { get; set; } = null!;
 
-    // Set from Order
     public string StatusText { get; set; } = null!;
 
     public bool IsDelivered => StatusText == "Delivered";
 
     public List<Marker> MapMarkers { get; set; } = null!;
 
-    public static OrderWithStatus FromOrder(Order order)
+    public static OrderWithStatusDto FromOrder(OrderDto order)
     {
         if (order.DeliveryLocation == null)
         {
             throw new ArgumentNullException(nameof(order.DeliveryLocation));
         }
-        // To simulate a real backend process, we fake status updates based on the amount
-        // of time since the order was placed
+        // To simulate a real backend process, we fake status updates based on the amount of time since the order was placed
         string statusText;
         List<Marker> mapMarkers;
         var dispatchTime = order.CreatedTime.Add(PreparationDuration);
@@ -40,7 +35,7 @@ public class OrderWithStatus
 
             var startPosition = ComputeStartPosition(order);
             var proportionOfDeliveryCompleted = Math.Min(1, (DateTime.Now - dispatchTime).TotalMilliseconds / DeliveryDuration.TotalMilliseconds);
-            var driverPosition = LatLong.Interpolate(startPosition, order.DeliveryLocation, proportionOfDeliveryCompleted);
+            var driverPosition = LatLongDto.Interpolate(startPosition, order.DeliveryLocation, proportionOfDeliveryCompleted);
             mapMarkers = [
                 ToMapMarker("You", order.DeliveryLocation),
                 ToMapMarker("Driver", driverPosition, showPopup: true),
@@ -52,7 +47,7 @@ public class OrderWithStatus
             mapMarkers = [ToMapMarker("Delivery location", order.DeliveryLocation, showPopup: true)];
         }
 
-        return new OrderWithStatus
+        return new OrderWithStatusDto
         {
             Order = order,
             StatusText = statusText,
@@ -60,21 +55,20 @@ public class OrderWithStatus
         };
     }
 
-    private static LatLong ComputeStartPosition(Order order)
+    private static LatLongDto ComputeStartPosition(OrderDto order)
     {
         if (order.DeliveryLocation == null)
         {
             throw new ArgumentNullException(nameof(order.DeliveryLocation));
         }
-        // Random but deterministic based on order ID
-        var rng = new Random(order.OrderId);
+        var rng = new Random(order.OrderId); // Random but deterministic based on order ID
         var distance = 0.01 + rng.NextDouble() * 0.02;
         var angle = rng.NextDouble() * Math.PI * 2;
         var offset = (distance * Math.Cos(angle), distance * Math.Sin(angle));
-        return new LatLong(order.DeliveryLocation.Latitude + offset.Item1, order.DeliveryLocation.Longitude + offset.Item2);
+        return new LatLongDto(order.DeliveryLocation.Latitude + offset.Item1, order.DeliveryLocation.Longitude + offset.Item2);
     }
 
-    static Marker ToMapMarker(string description, LatLong coords, bool showPopup = false)
-            => new()
-            { Description = description, X = coords.Longitude, Y = coords.Latitude, ShowPopup = showPopup };
+    static Marker ToMapMarker(string description, LatLongDto coords, bool showPopup = false)
+        => new()
+        { Description = description, X = coords.Longitude, Y = coords.Latitude, ShowPopup = showPopup };
 }

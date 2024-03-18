@@ -10,37 +10,105 @@
         <form class="dialog-body">
             <div>
                 <label>Size:</label>
-                <input type="range" min="OrderPizzaDto.MinimumSize" max="OrderPizzaDto.MaximumSize" step="1" @bind="Pizza.Size" @bind:event="oninput" 
-                    @onchange="@(() => totalPriceSub.OnNext(true))" />
+                <input type="range" min="PizzaDto.MinimumSize" max="PizzaDto.MaximumSize" step="1"
+                    @bind="Pizza.Size" 
+                    @bind:event="oninput" 
+                    @bind:after="@(() => {
+                        basePriceSub.OnNext(true);
+                        totalPriceSub.OnNext(true);
+                    })" />
                 <span class="size-label">
-                    @(Pizza.Size)" (£@(totalPrice.GetFormattedPrice()))
+                    @(Pizza.Size)" (£@(basePrice.GetFormattedPrice()))
                 </span>
+            </div>
+            <div>
+                <label>Extra Toppings:</label>
+                @if (loading)
+                {
+                    <select class="custom-select" disabled>
+                        <option><LoadingIndicator /></option>
+                    </select>
+                }
+                else if (Pizza.Toppings.Count >= 6)
+                {
+                    <div>(maximum reached)</div>
+                }
+                else
+                {
+                    <select class="custom-select" @onchange="ToppingSelected">
+                        <option value="-1" disabled selected>(select)</option>
+                        @for (var i = 0; i < toppings.Count; i++)
+                        {
+                            <option value="@i">@toppings[i].Name - (£@(toppings[i].Price.GetFormattedPrice()))</option>
+                        }
+                    </select>
+                }
+            </div>
+            <div class="toppings">
+                @foreach (var topping in Pizza.Toppings)
+                {
+                    if (topping?.Topping is not null)
+                    {
+                        <div class="topping">
+                            @topping.Topping.Name
+                            <span class="topping-price">@topping.Topping.Price.GetFormattedPrice()</span>
+                            <button type="button" class="delete-topping" @onclick="@(() => RemoveTopping(topping.Topping))">x</button>
+                        </div>
+                    }
+                }
             </div>
         </form>
         <div class="dialog-buttons">
-            <button class="btn btn-secondary mr-auto">Cancel</button>
+            <button class="btn btn-secondary mr-auto" @onclick="OnCancel">Cancel</button>
             <span class="mr-center">
                 Price: <span class="price">@(totalPrice.GetFormattedPrice())</span>
             </span>
-            <button class="btn btn-success ml-auto">Order</button>
+            <button class="btn btn-success ml-auto" @onclick="OnConfirm">Order</button>
         </div>
     </div>
 </div>
 
 @code {
-    [Parameter, EditorRequired] public OrderPizzaDto Pizza { get; set; } = new();
+    [Parameter, EditorRequired] public PizzaDto Pizza { get; set; } = new();
+    [Parameter, EditorRequired] public EventCallback OnCancel { get; set; }
+    [Parameter, EditorRequired] public EventCallback OnConfirm { get; set; }
 
+    decimal basePrice;
+    Subject<bool> basePriceSub = new();
     decimal totalPrice;
     Subject<bool> totalPriceSub = new();
+    bool loading = true;
+    List<ToppingDto> toppings = [];
+    IDisposable? toppingsSub;
 
     protected override void OnInitialized()
     {
+        HookToBasePrice().Subscribe(res =>
+        {
+            basePrice = res;
+            InvokeAsync(StateHasChanged);
+        });
+        basePriceSub.OnNext(true);
+
         HookToTotalPrice().Subscribe(res =>
         {
             totalPrice = res;
             InvokeAsync(StateHasChanged);
         });
         totalPriceSub.OnNext(true);
+
+        toppingsSub = HookToToppings().Subscribe(res =>
+        {
+            toppings = res;
+            loading = false;
+            InvokeAsync(StateHasChanged);
+        });
+    }
+
+    protected IObservable<decimal> HookToBasePrice()
+    {
+        return basePriceSub
+            .SelectMany(_ => Observable.FromAsync(async () => await PizzaService.GetPizzaBasePriceAsync(Pizza)));
     }
 
     protected IObservable<decimal> HookToTotalPrice()
@@ -49,8 +117,39 @@
             .SelectMany(_ => Observable.FromAsync(async () => await PizzaService.GetPizzaTotalPriceAsync(Pizza)));
     }
 
+    protected IObservable<List<ToppingDto>> HookToToppings()
+    {
+        return Observable.FromAsync(PizzaService.GetListToppingAsync);
+    }
+
+    protected void ToppingSelected(ChangeEventArgs e)
+    {
+        if (int.TryParse((string?)e.Value, out var index) && index >= 0)
+        {
+            AddTopping(toppings[index]);
+        }
+    }
+
+    protected void AddTopping(ToppingDto topping)
+    {
+        if (toppings is null) return;
+        if (Pizza.Toppings.Find(pt => pt.Topping == topping) is null)
+        {
+            Pizza.Toppings.Add(new PizzaToppingDto() { Topping = topping });
+            totalPriceSub.OnNext(true);
+        }
+    }
+
+    protected void RemoveTopping(ToppingDto topping)
+    {
+        Pizza.Toppings.RemoveAll(pt => pt.Topping == topping);
+        totalPriceSub.OnNext(true);
+    }
+
     public void Dispose()
     {
+        basePriceSub.Dispose();
         totalPriceSub.Dispose();
+        toppingsSub?.Dispose();
     }
 }

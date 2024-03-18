@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using PizzaStore.Client.Pages;
 using PizzaStore.Components;
 using PizzaStore.Components.Account;
 using PizzaStore.Contracts;
@@ -45,6 +44,7 @@ builder.Services.AddIdentityCore<PizzaStoreUser>(options => options.SignIn.Requi
 builder.Services.AddSingleton<IEmailSender<PizzaStoreUser>, IdentityNoOpEmailSender>();
 builder.Services.AddAutoMapper(typeof(PizzaStoreMapperProfile).Assembly);
 builder.Services.AddScoped<IPizzaService, PizzaService>();
+builder.Services.AddScoped<IOrdersService, OrdersService>();
 
 var app = builder.Build();
 

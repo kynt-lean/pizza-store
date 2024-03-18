@@ -52,16 +52,16 @@ public static class PizzaApiExtensions
         });
 
         // Pizza base price
-        app.MapPost("pizza/base-price", async ([FromBody] OrderPizzaDto orderPizza, IPizzaService service) =>
+        app.MapPost("pizza/base-price", async ([FromBody] PizzaDto pizza, IPizzaService service) =>
         {
-            var basePrice = await service.GetPizzaBasePriceAsync(orderPizza);
+            var basePrice = await service.GetPizzaBasePriceAsync(pizza);
             return Results.Ok(basePrice);
         });
 
         // Pizza total price
-        app.MapPost("pizza/total-price", async ([FromBody] OrderPizzaDto orderPizza, IPizzaService service) =>
+        app.MapPost("pizza/total-price", async ([FromBody] PizzaDto pizza, IPizzaService service) =>
         {
-            var totalPrice = await service.GetPizzaTotalPriceAsync(orderPizza);
+            var totalPrice = await service.GetPizzaTotalPriceAsync(pizza);
             return Results.Ok(totalPrice);
         });
 

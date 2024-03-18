@@ -6,16 +6,10 @@ using PizzaStore.Domain;
 
 namespace PizzaStore.Services;
 
-public class PizzaService : IPizzaService
+public class PizzaService(PizzaStoreDbContext db, IMapper mapper) : IPizzaService
 {
-    private readonly PizzaStoreDbContext _db;
-    private readonly IMapper _mapper;
-
-    public PizzaService(PizzaStoreDbContext db, IMapper mapper)
-    {
-        _db = db;
-        _mapper = mapper;
-    }
+    private readonly PizzaStoreDbContext _db = db;
+    private readonly IMapper _mapper = mapper;
 
     public async Task<List<PizzaSpecialDto>> GetListSpecialAsync()
     {
@@ -27,15 +21,9 @@ public class PizzaService : IPizzaService
         return _mapper.Map<List<ToppingDto>>(await _db.Toppings.OrderBy(t => t.Name).ToListAsync());
     }
 
-    public Task<decimal> GetPizzaBasePriceAsync(OrderPizzaDto orderPizza)
-    {
-        var pizza = _mapper.Map<Pizza>(orderPizza);
-        return Task.FromResult(pizza.GetBasePrice());
-    }
+    public Task<decimal> GetPizzaBasePriceAsync(PizzaDto pizza)
+        => Task.FromResult(_mapper.Map<Pizza>(pizza).GetBasePrice());
 
-    public Task<decimal> GetPizzaTotalPriceAsync(OrderPizzaDto orderPizza)
-    {
-        var pizza = _mapper.Map<Pizza>(orderPizza);
-        return Task.FromResult(pizza.GetTotalPrice());
-    }
+    public Task<decimal> GetPizzaTotalPriceAsync(PizzaDto pizza)
+        => Task.FromResult(_mapper.Map<Pizza>(pizza).GetTotalPrice());
 }

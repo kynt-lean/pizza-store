@@ -17,5 +17,6 @@ builder.Services.AddScoped(sp =>
     });
 
 builder.Services.AddScoped<IPizzaService, ClientPizzaService>();
+builder.Services.AddScoped<IOrdersService, ClientOrdersService>();
 
 await builder.Build().RunAsync();
