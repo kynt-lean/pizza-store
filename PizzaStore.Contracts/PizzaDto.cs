@@ -17,4 +17,18 @@ public class PizzaDto
     public int Size { get; set; }
 
     public List<PizzaToppingDto> Toppings { get; set; } = [];
+
+    public decimal GetBasePrice()
+    {
+        return Special == null
+            ? throw new NullReferenceException($"{nameof(Special)} was null when calculating Base Price.")
+            : Size / (decimal)DefaultSize * Special.BasePrice;
+    }
+
+    public decimal GetTotalPrice()
+    {
+        return Toppings.Any(t => t.Topping is null)
+            ? throw new NullReferenceException($"{nameof(Toppings)} contained null when calculating the Total Price.")
+            : GetBasePrice() + Toppings.Sum(t => t.Topping!.Price);
+    }
 }

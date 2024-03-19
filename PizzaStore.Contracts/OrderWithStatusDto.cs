@@ -2,8 +2,8 @@ namespace PizzaStore.Contracts;
 
 public class OrderWithStatusDto
 {
-    public readonly static TimeSpan PreparationDuration = TimeSpan.FromSeconds(15);
-    public readonly static TimeSpan DeliveryDuration = TimeSpan.FromMinutes(30);
+    public readonly static TimeSpan PreparationDuration = TimeSpan.FromSeconds(5);
+    public readonly static TimeSpan DeliveryDuration = TimeSpan.FromSeconds(10);
 
     public OrderDto Order { get; set; } = null!;
 

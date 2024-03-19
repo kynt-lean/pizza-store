@@ -21,8 +21,8 @@
                         <h5>@item.Order.CreatedTime.ToLongDateString()</h5>
                         Items:
                         <strong>@item.Order.Pizzas.Count()</strong>;
-                        @* Total price:
-                        <strong>£@item.Order.GetFormattedTotalPrice()</strong> *@
+                        Total price:
+                        <strong>£@item.Order.GetTotalPrice().GetFormattedPrice()</strong>
                     </div>
                     <div class="col">
                         Status: <strong>@item.StatusText</strong>

@@ -1,4 +1,3 @@
-@implements IDisposable
 @inject IOrdersService OrdersService
 
 <div class="sidebar">
@@ -20,7 +19,7 @@
 
     <div class="order-total @(Order.Pizzas.Any() ? "" : "hidden")">
         Total:
-        <span class="total-price">@totalPrice.GetFormattedPrice()</span>
+        <span class="total-price">@Order.GetTotalPrice().GetFormattedPrice()</span>
         <button class="btn btn-warning" disabled="@(Order.Pizzas.Count == 0)" @onclick="PlaceOrder">
             Order >
         </button>
@@ -30,33 +29,6 @@
 @code {
     [Parameter, EditorRequired] public OrderDto Order { get; set; } = new();
     [Parameter, EditorRequired] public EventCallback<int> OnPlacedOrder { get; set; }
-    @* [Parameter, EditorRequired] public EventCallback<PizzaDto> OnRemoveConfiguredPizza { get; set; } *@
-
-    decimal totalPrice;
-    Subject<bool> totalPriceSub = new();
-
-    public void RefreshOrderTotalPrice()
-    {
-        totalPriceSub.OnNext(true);
-    }
-
-    protected override void OnInitialized()
-    {
-        HookToOrderTotalPrice().Subscribe(res =>
-        {
-            totalPrice = res;
-            InvokeAsync(StateHasChanged);
-        });
-        totalPriceSub.OnNext(true);
-    }
-
-    IObservable<decimal> HookToOrderTotalPrice()
-    {
-        return totalPriceSub
-            .SelectMany(_ => Order.Pizzas.Any()
-                ? Observable.FromAsync(async () => await OrdersService.GetOrderTotalPriceAsync(Order))
-                : Observable.Return<decimal>(0));
-    }
 
     void RemoveConfiguredPizza(PizzaDto pizza)
     {
@@ -67,10 +39,5 @@
     {
         var orderId = await OrdersService.PlaceOrderAsync(Order);
         await OnPlacedOrder.InvokeAsync(orderId);
-    }
-
-    public void Dispose()
-    {
-        totalPriceSub.Dispose();
     }
 }

@@ -15,4 +15,6 @@ public class OrderDto
     public LatLongDto? DeliveryLocation { get; set; }
 
     public List<PizzaDto> Pizzas { get; set; } = [];
+
+    public decimal GetTotalPrice() => Pizzas.Sum(p => p.GetTotalPrice());
 }

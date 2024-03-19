@@ -14,14 +14,4 @@ public class ClientPizzaService(HttpClient http) : IPizzaService
     {
         return await http.GetFromJsonAsync<List<ToppingDto>>("pizza/toppings") ?? [];
     }
-
-    public async Task<decimal> GetPizzaBasePriceAsync(PizzaDto pizza)
-    {
-        return Convert.ToDecimal(await (await http.PostAsJsonAsync("pizza/base-price", pizza)).Content.ReadAsStringAsync());
-    }
-
-    public async Task<decimal> GetPizzaTotalPriceAsync(PizzaDto pizza)
-    {
-        return Convert.ToDecimal(await (await http.PostAsJsonAsync("pizza/total-price", pizza)).Content.ReadAsStringAsync());
-    }
 }

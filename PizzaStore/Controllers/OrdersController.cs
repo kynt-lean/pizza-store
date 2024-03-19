@@ -28,12 +28,6 @@ public class OrdersController(IOrdersService service) : Controller
         }
     }
 
-    [HttpPost("total-price")]
-    public async Task<ActionResult<decimal>> GetOrderTotalPriceAsync(OrderDto order)
-    {
-        return await _service.GetOrderTotalPriceAsync(order);
-    }
-
     [HttpPost]
     public async Task<ActionResult<int>> PlaceOrderAsync(OrderDto order)
     {

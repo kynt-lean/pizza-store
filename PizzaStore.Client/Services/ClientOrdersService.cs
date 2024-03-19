@@ -10,11 +10,6 @@ public class ClientOrdersService(HttpClient http) : IOrdersService
         return await http.GetFromJsonAsync<List<OrderWithStatusDto>>("orders") ?? [];
     }
 
-    public async Task<decimal> GetOrderTotalPriceAsync(OrderDto order)
-    {
-        return Convert.ToDecimal(await (await http.PostAsJsonAsync("orders/total-price", order)).Content.ReadAsStringAsync());
-    }
-
     public async Task<OrderWithStatusDto> GetOrderWithStatusAsync(int orderId)
     {
         return await http.GetFromJsonAsync<OrderWithStatusDto>($"orders/{orderId}") ?? throw new NullReferenceException();

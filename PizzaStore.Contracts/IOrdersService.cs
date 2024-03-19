@@ -7,6 +7,4 @@ public interface IOrdersService
     Task<OrderWithStatusDto> GetOrderWithStatusAsync(int orderId);
 
     Task<int> PlaceOrderAsync(OrderDto order);
-
-    Task<decimal> GetOrderTotalPriceAsync(OrderDto order);
 }

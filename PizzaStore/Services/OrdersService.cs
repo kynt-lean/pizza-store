@@ -74,11 +74,6 @@ public class OrdersService(PizzaStoreDbContext db, IMapper mapper) : IOrdersServ
         return creatingOrder.OrderId;
     }
 
-    public Task<decimal> GetOrderTotalPriceAsync(OrderDto order)
-    {
-        return Task.FromResult(_mapper.Map<Order>(order).GetTotalPrice());
-    }
-
     private static async Task TrackAndSendNotificationsAsync(Order order, NotificationSubscription subscription)
     {
         // In a realistic case, some other backend process would track
