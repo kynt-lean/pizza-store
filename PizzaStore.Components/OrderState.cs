@@ -16,10 +16,8 @@ public class OrderState
         {
             Special = special,
             SpecialId = special.Id,
-            Size = PizzaDto.DefaultSize,
-            Toppings = new List<PizzaToppingDto>(),
+            Size = PizzaDto.DefaultSize
         };
-
         ShowingConfigureDialog = true;
     }
 

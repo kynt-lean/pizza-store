@@ -20,7 +20,7 @@
     </ul>
 </div>
 
-<ConfigurePizzasOrder @ref="configurePizzasOrder" Order="order" OnRemoveConfiguredPizza="OrderState.RemoveConfiguredPizza" OnPlacedOrder="OnPlacedOrder" />
+<ConfigurePizzasOrder @ref="configurePizzasOrder" Order="order" OnRemoveConfiguredPizza="OrderState.RemoveConfiguredPizza" />
 
 @if (OrderState.ShowingConfigureDialog)
 {
@@ -51,12 +51,6 @@
             await Task.Delay(300);
             return await PizzaService.GetListSpecialAsync();
         });
-    }
-
-    void OnPlacedOrder(int orderId)
-    {
-        OrderState.ResetOrder();
-        NavigationManager.NavigateTo($"myorders/{orderId}");
     }
 
     public void Dispose()

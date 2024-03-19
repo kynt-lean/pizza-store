@@ -8,7 +8,7 @@
 
             @foreach (var configuredPizza in Order.Pizzas)
             {
-                <ConfiguredPizzaItem Pizza="configuredPizza" OnRemoved="@(_ => RemoveConfiguredPizza(configuredPizza))" />
+                <ConfiguredPizzaItem Pizza="configuredPizza" OnRemoved="@(_ => OnRemoveConfiguredPizza.InvokeAsync(configuredPizza))" />
             }
         </div>
     }
@@ -20,25 +20,13 @@
     <div class="order-total @(Order.Pizzas.Any() ? "" : "hidden")">
         Total:
         <span class="total-price">@Order.GetTotalPrice().GetFormattedPrice()</span>
-        <button class="btn btn-warning" disabled="@(Order.Pizzas.Count == 0)" @onclick="PlaceOrder">
+        <a href="checkout" class="@(Order.Pizzas.Count == 0 ? "btn btn-warning disabled" : "btn btn-warning")">
             Order >
-        </button>
+        </a>
     </div>
 </div>
 
 @code {
     [Parameter, EditorRequired] public OrderDto Order { get; set; } = new();
     [Parameter, EditorRequired] public EventCallback<PizzaDto> OnRemoveConfiguredPizza { get; set; }
-    [Parameter, EditorRequired] public EventCallback<int> OnPlacedOrder { get; set; }
-
-    async void RemoveConfiguredPizza(PizzaDto pizza)
-    {
-        await OnRemoveConfiguredPizza.InvokeAsync(pizza);
-    }
-
-    async Task PlaceOrder()
-    {
-        var orderId = await OrdersService.PlaceOrderAsync(Order);
-        await OnPlacedOrder.InvokeAsync(orderId);
-    }
 }

@@ -1,0 +1,38 @@
+@using Microsoft.AspNetCore.Components.Forms
+@inject NavigationManager NavigationManager
+@inject IOrdersService OrdersService
+@inject OrderState OrderState
+
+<div class="main">
+    <EditForm Model="OrderState.Order.DeliveryAddress" OnValidSubmit="PlaceOrder">
+        <div class="checkout-cols">
+            <div class="checkout-order-details">
+                <h4>Review order</h4>
+                <OrderReview Order="OrderState.Order" />
+            </div>
+            <div class="checkout-delivery-address">
+                <h4>Deliver to...</h4>
+                <AddressEditor Address="OrderState.Order.DeliveryAddress" />
+            </div>
+        </div>
+
+        <button class="checkout-button btn btn-warning" type="submit" disabled="@isSubmitting">
+            Place order
+        </button>
+        <DataAnnotationsValidator />
+    </EditForm>    
+</div>
+
+@code {
+    bool isSubmitting;
+
+    async Task PlaceOrder()
+    {
+        isSubmitting = true;
+        await Task.Delay(500);
+        var orderId = await OrdersService.PlaceOrderAsync(OrderState.Order);
+        OrderState.ResetOrder();
+        isSubmitting = false;
+        NavigationManager.NavigateTo($"myorders/{orderId}");
+    }
+}
