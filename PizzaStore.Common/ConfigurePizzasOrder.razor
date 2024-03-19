@@ -1,0 +1,70 @@
+@implements IDisposable
+@inject IOrdersService OrdersService
+
+<div class="sidebar">
+    @if (Order.Pizzas.Any())
+    {
+        <div class="order-contents">
+            <h2>Your order</h2>
+
+            @foreach (var configuredPizza in Order.Pizzas)
+            {
+                <ConfiguredPizzaItem Pizza="configuredPizza" OnRemoved="@(() => RemoveConfiguredPizza(configuredPizza))" />
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-cart">Choose a pizza<br>to get started</div>
+    }
+
+    <div class="order-total @(Order.Pizzas.Any() ? "" : "hidden")">
+        Total:
+        <span class="total-price">@totalPrice.GetFormattedPrice()</span>
+        <button class="btn btn-warning" disabled="@(Order.Pizzas.Count == 0)" @onclick="OnPlaceOrder">
+            Order >
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public OrderDto Order { get; set; } = new();
+    [Parameter, EditorRequired] public EventCallback<PizzaDto> OnRemoveConfiguredPizza { get; set; }
+    [Parameter, EditorRequired] public EventCallback OnPlaceOrder { get; set; }
+
+    decimal totalPrice;
+    Subject<bool> totalPriceSub = new();
+
+    public void RefreshOrderTotalPrice()
+    {
+        totalPriceSub.OnNext(true);
+    }
+
+    protected override void OnInitialized()
+    {
+        HookToOrderTotalPrice().Subscribe(res =>
+        {
+            totalPrice = res;
+            InvokeAsync(StateHasChanged);
+        });
+        totalPriceSub.OnNext(true);
+    }
+
+    IObservable<decimal> HookToOrderTotalPrice()
+    {
+        return totalPriceSub
+            .SelectMany(_ => Order.Pizzas.Any()
+                ? Observable.FromAsync(async () => await OrdersService.GetOrderTotalPriceAsync(Order))
+                : Observable.Return<decimal>(0));
+    }
+
+    void RemoveConfiguredPizza(PizzaDto pizza)
+    {
+        OnRemoveConfiguredPizza.InvokeAsync(pizza);
+    }
+
+    public void Dispose()
+    {
+        totalPriceSub.Dispose();
+    }
+}

@@ -4,8 +4,8 @@
 
 @if (loading) { <LoadingIndicator /> }
 
-<div class="pizza-cards">
-    <ul>
+<div class="main">
+    <ul class="pizza-cards">
     @foreach (var special in specials)
     {
         <li @onclick="@(() => ShowConfigurePizzaDialog(special))" style="background-image: url('@special.ImageUrl')">
@@ -19,31 +19,7 @@
     </ul>
 </div>
 
-<div class="sidebar">
-    @if (order.Pizzas.Any())
-    {
-        <div class="order-contents">
-            <h2>Your order</h2>
-
-            @foreach (var configuredPizza in order.Pizzas)
-            {
-                <ConfiguredPizzaItem Pizza="configuredPizza" OnRemoved="@(() => RemoveConfiguredPizza(configuredPizza))" />
-            }
-        </div>
-    }
-    else
-    {
-        <div class="empty-cart">Choose a pizza<br>to get started</div>
-    }
-
-    <div class="order-total @(order.Pizzas.Any() ? "" : "hidden")">
-        Total:
-        <span class="total-price">@totalPrice.GetFormattedPrice()</span>
-        <button class="btn btn-warning" disabled="@(order.Pizzas.Count == 0)" @onclick="PlaceOrder">
-            Order >
-        </button>
-    </div>
-</div>
+<ConfigurePizzasOrder @ref="configurePizzasOrder" Order="order" OnRemoveConfiguredPizza="RemoveConfiguredPizza" OnPlaceOrder="PlaceOrder" />
 
 @if (showingConfigureDialog)
 {
@@ -57,27 +33,19 @@
     PizzaDto? configuringPizza;
     bool showingConfigureDialog = false;
     OrderDto order = new OrderDto();
-    decimal totalPrice;
-    Subject<bool> totalPriceSub = new();
+    ConfigurePizzasOrder? configurePizzasOrder;
 
     protected override void OnInitialized()
     {
-        subscription = HookToQuery().Subscribe(res =>
+        subscription = HookToListSpecial().Subscribe(res =>
         {
             specials = res;
             loading = false;
             InvokeAsync(StateHasChanged);
         });
-
-        HookToOrderTotalPrice().Subscribe(res =>
-        {
-            totalPrice = res;
-            InvokeAsync(StateHasChanged);
-        });
-        totalPriceSub.OnNext(true);
     }
 
-    protected IObservable<List<PizzaSpecialDto>> HookToQuery()
+    IObservable<List<PizzaSpecialDto>> HookToListSpecial()
     {
         return Observable.FromAsync(async () =>
         {
@@ -86,7 +54,7 @@
         });
     }
 
-    protected void ShowConfigurePizzaDialog(PizzaSpecialDto special)
+    void ShowConfigurePizzaDialog(PizzaSpecialDto special)
     {
         configuringPizza = new PizzaDto()
         {
@@ -98,23 +66,24 @@
         showingConfigureDialog = true;
     }
 
-    protected void CancelConfigurePizzaDialog()
+    void CancelConfigurePizzaDialog()
     {
         configuringPizza = null;
         showingConfigureDialog = false;
     }
 
-    protected void ConfirmConfigurePizzaDialog()
+    void ConfirmConfigurePizzaDialog()
     {
         if (configuringPizza is not null)
         {
             order.Pizzas.Add(configuringPizza);
             configuringPizza = null;
+            configurePizzasOrder?.RefreshOrderTotalPrice();
         }        
         showingConfigureDialog = false;
     }
 
-    protected void RemoveConfiguredPizza(PizzaDto pizza)
+    void RemoveConfiguredPizza(PizzaDto pizza)
     {
         order.Pizzas.Remove(pizza);
     }
@@ -125,15 +94,8 @@
         order = new OrderDto();
     }
 
-    protected IObservable<decimal> HookToOrderTotalPrice()
-    {
-        return totalPriceSub
-            .SelectMany(_ => Observable.FromAsync(async () => await OrdersService.GetOrderTotalPriceAsync(order)));
-    }
-
     public void Dispose()
     {
         subscription?.Dispose();
-        totalPriceSub.Dispose();
     }
 }
