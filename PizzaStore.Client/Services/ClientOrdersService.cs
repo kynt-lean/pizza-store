@@ -17,7 +17,7 @@ public class ClientOrdersService(HttpClient http) : IOrdersService
 
     public async Task<OrderWithStatusDto> GetOrderWithStatusAsync(int orderId)
     {
-        return await http.GetFromJsonAsync<OrderWithStatusDto>($"orders/{orderId}") ?? throw new Exception();
+        return await http.GetFromJsonAsync<OrderWithStatusDto>($"orders/{orderId}") ?? throw new NullReferenceException();
     }
 
     public async Task<int> PlaceOrderAsync(OrderDto order)

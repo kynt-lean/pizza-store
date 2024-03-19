@@ -1,0 +1,8 @@
+@page "/myorders/{orderId:int}"
+@rendermode InteractiveAuto
+
+<OrderTracking OrderId="orderId" />
+
+@code {
+    [Parameter] public int orderId { get; set; }
+}

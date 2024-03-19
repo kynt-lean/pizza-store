@@ -9,7 +9,7 @@
 
             @foreach (var configuredPizza in Order.Pizzas)
             {
-                <ConfiguredPizzaItem Pizza="configuredPizza" OnRemoved="@(() => RemoveConfiguredPizza(configuredPizza))" />
+                <ConfiguredPizzaItem Pizza="configuredPizza" OnRemoved="@(_ => RemoveConfiguredPizza(configuredPizza))" />
             }
         </div>
     }
@@ -21,7 +21,7 @@
     <div class="order-total @(Order.Pizzas.Any() ? "" : "hidden")">
         Total:
         <span class="total-price">@totalPrice.GetFormattedPrice()</span>
-        <button class="btn btn-warning" disabled="@(Order.Pizzas.Count == 0)" @onclick="OnPlaceOrder">
+        <button class="btn btn-warning" disabled="@(Order.Pizzas.Count == 0)" @onclick="PlaceOrder">
             Order >
         </button>
     </div>
@@ -29,8 +29,8 @@
 
 @code {
     [Parameter, EditorRequired] public OrderDto Order { get; set; } = new();
-    [Parameter, EditorRequired] public EventCallback<PizzaDto> OnRemoveConfiguredPizza { get; set; }
-    [Parameter, EditorRequired] public EventCallback OnPlaceOrder { get; set; }
+    [Parameter, EditorRequired] public EventCallback<int> OnPlacedOrder { get; set; }
+    @* [Parameter, EditorRequired] public EventCallback<PizzaDto> OnRemoveConfiguredPizza { get; set; } *@
 
     decimal totalPrice;
     Subject<bool> totalPriceSub = new();
@@ -60,7 +60,13 @@
 
     void RemoveConfiguredPizza(PizzaDto pizza)
     {
-        OnRemoveConfiguredPizza.InvokeAsync(pizza);
+        Order.Pizzas.Remove(pizza);
+    }
+
+    async Task PlaceOrder()
+    {
+        var orderId = await OrdersService.PlaceOrderAsync(Order);
+        await OnPlacedOrder.InvokeAsync(orderId);
     }
 
     public void Dispose()

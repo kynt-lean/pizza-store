@@ -11,8 +11,7 @@ public class PizzaStoreMapperProfile : Profile
         CreateMap<Topping, ToppingDto>().ReverseMap();
         CreateMap<PizzaSpecial, PizzaSpecialDto>().ReverseMap();
         CreateMap<PizzaTopping, PizzaToppingDto>().ReverseMap();
-        CreateMap<PizzaDto, Pizza>();
-
+        CreateMap<Pizza, PizzaDto>().ReverseMap();
         CreateMap<Order, OrderDto>().ReverseMap();
         CreateMap<Address, AddressDto>().ReverseMap();
         CreateMap<LatLong, LatLongDto>().ReverseMap();

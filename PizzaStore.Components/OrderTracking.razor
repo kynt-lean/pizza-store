@@ -1,0 +1,78 @@
+@implements IDisposable
+@inject IOrdersService OrdersService
+
+<div class="main">
+    @if (invalidOrder)
+    {
+        <h2>Nope</h2>
+        <p>Sorry, this order could not be loaded.</p>
+    }
+    else if (orderWithStatus == null)
+    {
+        <LoadingIndicator />
+    }
+    else
+    {
+        <div class="track-order">
+            <div class="track-order-title">
+                <h2>
+                    Order placed @orderWithStatus.Order.CreatedTime.ToLongDateString()
+                </h2>
+                <p class="ml-auto mb-0">
+                    Status: <strong>@orderWithStatus.StatusText</strong>
+                </p>
+            </div>
+            <div class="track-order-body">
+                <div class="track-order-details">
+                    <OrderReview Order="orderWithStatus.Order" />
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public int OrderId { get; set; }
+    OrderWithStatusDto? orderWithStatus;
+    bool invalidOrder = false;
+    IDisposable? subscription;
+    Subject<bool> destroy = new();
+
+    protected override void OnInitialized()
+    {
+        subscription = HookToOrderWithStatus().Subscribe(
+            onNext: res =>
+            {
+                if (res.IsDelivered)
+                {
+                    destroy.OnNext(true);
+                }
+                orderWithStatus = res;
+                InvokeAsync(StateHasChanged);
+            },
+            onError: err =>
+            {
+                invalidOrder = true;
+                Console.Error.WriteLine(err);
+                InvokeAsync(StateHasChanged);
+            });
+    }
+
+    IObservable<OrderWithStatusDto> HookToOrderWithStatus()
+    {
+        return Observable
+            .Interval(TimeSpan.FromMilliseconds(2000))
+            .TakeUntil(destroy)
+            .SelectMany(_ => Observable.FromAsync(() => OrdersService.GetOrderWithStatusAsync(OrderId)));
+    }   
+
+    public void Dispose()
+    {
+        subscription?.Dispose();
+        if (!destroy.IsDisposed)
+        {
+            destroy.OnNext(true);
+            destroy.OnCompleted();
+        }        
+    }
+}

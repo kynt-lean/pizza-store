@@ -35,7 +35,7 @@ public class OrdersService(PizzaStoreDbContext db, IMapper mapper) : IOrdersServ
             .SingleOrDefaultAsync();
 
         return order == null
-            ? throw new Exception()
+            ? throw new NullReferenceException()
             : OrderWithStatusDto.FromOrder(_mapper.Map<OrderDto>(order));
     }
 
@@ -71,7 +71,7 @@ public class OrdersService(PizzaStoreDbContext db, IMapper mapper) : IOrdersServ
         //     _ = TrackAndSendNotificationsAsync(order, subscription);
         // }
 
-        return order.OrderId;
+        return creatingOrder.OrderId;
     }
 
     public Task<decimal> GetOrderTotalPriceAsync(OrderDto order)

@@ -6,7 +6,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PizzaStore", "PizzaStore\Pi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PizzaStore.Client", "PizzaStore.Client\PizzaStore.Client.csproj", "{1F6FCC46-7433-4CAF-8681-5BA941A44A45}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaStore.Common", "PizzaStore.Common\PizzaStore.Common.csproj", "{8EC2818F-F48E-4EEA-9FC5-183F2751395C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaStore.Components", "PizzaStore.Components\PizzaStore.Components.csproj", "{8EC2818F-F48E-4EEA-9FC5-183F2751395C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PizzaStore.Contracts", "PizzaStore.Contracts\PizzaStore.Contracts.csproj", "{8AC37D97-45AD-4ED4-A5D3-456EE744D5B9}"
 EndProject
