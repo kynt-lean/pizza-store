@@ -1,6 +1,7 @@
 @implements IDisposable
 @inject NavigationManager NavigationManager
 @inject IPizzaService PizzaService
+@inject OrderState OrderState
 
 @if (loading) { <LoadingIndicator /> }
 
@@ -8,7 +9,7 @@
     <ul class="pizza-cards">
         @foreach (var special in specials)
         {
-            <li @onclick="@(() => ShowConfigurePizzaDialog(special))" style="background-image: url('@special.ImageUrl')">
+            <li @onclick="@(() => OrderState.ShowConfigurePizzaDialog(special))" style="background-image: url('@special.ImageUrl')">
                 <div class="pizza-info">
                     <span class="title">@special.Name</span>
                     @special.Description
@@ -19,20 +20,18 @@
     </ul>
 </div>
 
-<ConfigurePizzasOrder @ref="configurePizzasOrder" Order="order" OnPlacedOrder="OnPlacedOrder" />
+<ConfigurePizzasOrder @ref="configurePizzasOrder" Order="order" OnRemoveConfiguredPizza="OrderState.RemoveConfiguredPizza" OnPlacedOrder="OnPlacedOrder" />
 
-@if (showingConfigureDialog)
+@if (OrderState.ShowingConfigureDialog)
 {
-    <ConfigurePizzaDialog Pizza="configuringPizza" OnCancel="CancelConfigurePizzaDialog" OnConfirm="ConfirmConfigurePizzaDialog" />
+    <ConfigurePizzaDialog Pizza="OrderState.ConfiguringPizza" OnCancel="OrderState.CancelConfigurePizzaDialog" OnConfirm="OrderState.ConfirmConfigurePizzaDialog" />
 }
 
 @code {
     bool loading = true;
     List<PizzaSpecialDto> specials = [];
     IDisposable? subscription;
-    PizzaDto? configuringPizza;
-    bool showingConfigureDialog = false;
-    OrderDto order = new OrderDto();
+    OrderDto order => OrderState.Order;
     ConfigurePizzasOrder? configurePizzasOrder;
 
     protected override void OnInitialized()
@@ -54,36 +53,9 @@
         });
     }
 
-    void ShowConfigurePizzaDialog(PizzaSpecialDto special)
-    {
-        configuringPizza = new PizzaDto()
-        {
-            Special = special,
-            SpecialId = special.Id,
-            Size = PizzaDto.DefaultSize
-        };
-        showingConfigureDialog = true;
-    }
-
-    void CancelConfigurePizzaDialog()
-    {
-        configuringPizza = null;
-        showingConfigureDialog = false;
-    }
-
-    void ConfirmConfigurePizzaDialog()
-    {
-        if (configuringPizza is not null)
-        {
-            order.Pizzas.Add(configuringPizza);
-            configuringPizza = null;
-        }        
-        showingConfigureDialog = false;
-    }    
-
     void OnPlacedOrder(int orderId)
     {
-        order = new OrderDto();
+        OrderState.ResetOrder();
         NavigationManager.NavigateTo($"myorders/{orderId}");
     }
 

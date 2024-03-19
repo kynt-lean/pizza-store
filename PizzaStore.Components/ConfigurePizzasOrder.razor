@@ -28,11 +28,12 @@
 
 @code {
     [Parameter, EditorRequired] public OrderDto Order { get; set; } = new();
+    [Parameter, EditorRequired] public EventCallback<PizzaDto> OnRemoveConfiguredPizza { get; set; }
     [Parameter, EditorRequired] public EventCallback<int> OnPlacedOrder { get; set; }
 
-    void RemoveConfiguredPizza(PizzaDto pizza)
+    async void RemoveConfiguredPizza(PizzaDto pizza)
     {
-        Order.Pizzas.Remove(pizza);
+        await OnRemoveConfiguredPizza.InvokeAsync(pizza);
     }
 
     async Task PlaceOrder()

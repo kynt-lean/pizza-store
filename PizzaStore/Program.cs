@@ -46,6 +46,7 @@ builder.Services.AddSingleton<IEmailSender<PizzaStoreUser>, IdentityNoOpEmailSen
 builder.Services.AddAutoMapper(typeof(PizzaStoreMapperProfile).Assembly);
 builder.Services.AddScoped<IPizzaService, PizzaService>();
 builder.Services.AddScoped<IOrdersService, OrdersService>();
+builder.Services.AddScoped<OrderState>();
 
 var app = builder.Build();
 
